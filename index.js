@@ -2,25 +2,32 @@
 
 // importing the packages. (express.)
 const express = require('express');
-const mongoose = require('mongoose'); // connecting the database with the server.
+// const mongoose = require('mongoose'); // connecting the database with the server.
 const connectDatabase = require('./database/database');
+const dotenv = require('dotenv');
 
 // creating an express application. 
 const app = express();
+
+//dotenv configuration
+dotenv.config()
 
 //connecting to databas 
 connectDatabase()
 
 //defining the port 
-const PORT = 5000;
+const PORT = process.env.PORT;;
 
 //making a test endpoint. 
 // EndPoints : POST, GET, PUT, DELETE
-app.get('/test', (req,res)=> {
+app.get('/test', (req, res) => {
     res.send('Hello World, test api is working.');
 })
 
-//http://localhost:5000/test
+//http://localhost:5000/api/user/create
+
+//configuring routes
+app.use('/api/user', require('./routes/userRoutes'))
 
 
 // starting the server. 

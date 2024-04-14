@@ -6,10 +6,10 @@ const mongoose = require('mongoose');
 // export
 
 const connectDatabase = () => {
-    mongoose.connect('mongodb+srv://test:test@cluster0.0jbdrrl.mongodb.net/').then(()=>{ 
-    console.log('Database connected');
-})
-} 
+    mongoose.connect(process.env.MONGODB_CLOUD).then(() => {
+        console.log('Database connected');
+    })
+}
 
 //exportinf the function
 module.exports = connectDatabase;
