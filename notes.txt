@@ -1,0 +1,5 @@
+controller= for all the logics files. 
+database= for all the database connection in mongodb
+middleware = to chakek betn frontend and backend such as auth token. 
+models = for database objects
+routes = for all the api endpoints. 
