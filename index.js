@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 
 // creating an express application. 
 const app = express();
+app.use(express.json())
 
 //dotenv configuration
 dotenv.config()
