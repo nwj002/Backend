@@ -17,7 +17,7 @@ dotenv.config()
 connectDatabase()
 
 //defining the port 
-const PORT = process.env.PORT;;
+const PORT = process.env.PORT;
 
 //making a test endpoint. 
 // EndPoints : POST, GET, PUT, DELETE
