@@ -10,6 +10,12 @@ const dotenv = require('dotenv');
 const app = express();
 app.use(express.json())
 
+//cinfigure cors policy
+const corsOptions = {
+    origin: true,
+
+}
+
 //dotenv configuration
 dotenv.config()
 
@@ -35,3 +41,4 @@ app.use('/api/user', require('./routes/userRoutes'))
 app.listen(PORT, () => {
     console.log(`Server-app is running on port ${PORT}`);
 });
+
