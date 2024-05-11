@@ -5,6 +5,7 @@ const express = require('express');
 // const mongoose = require('mongoose'); // connecting the database with the server.
 const connectDatabase = require('./database/database');
 const dotenv = require('dotenv');
+const cors = require('cors');
 
 // creating an express application. 
 const app = express();
@@ -13,8 +14,11 @@ app.use(express.json())
 //cinfigure cors policy
 const corsOptions = {
     origin: true,
+    credentials: true,
+    optionSuccessStatus: 200,
 
 }
+app.use(cors(corsOptions))
 
 //dotenv configuration
 dotenv.config()
