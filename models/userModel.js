@@ -18,8 +18,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-
-
 });
 
 const User = mongoose.model("users", userSchema);  // to export into controller

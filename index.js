@@ -11,7 +11,7 @@ const cors = require('cors');
 const app = express();
 app.use(express.json())
 
-//cinfigure cors policy
+//configure cors policy
 const corsOptions = {
     origin: true,
     credentials: true,
@@ -39,6 +39,8 @@ app.get('/test', (req, res) => {
 
 //configuring routes
 app.use('/api/user', require('./routes/userRoutes'))
+// app.use('/api/user', require('./routes/userRoutes'))
+
 
 
 // starting the server. 

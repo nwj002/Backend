@@ -4,3 +4,8 @@ middleware = to check  betn frontend and backend such as auth token.
 models = for database objects
 routes = for all the api endpoints. 
 
+task 
+make a login page
+make a path in app.js
+make a frontend with email and password
+make a use state
