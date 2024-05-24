@@ -6,6 +6,7 @@ const express = require('express');
 const connectDatabase = require('./database/database');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const acceptFormData = require('express-fileupload');
 
 // creating an express application. 
 const app = express();
@@ -34,6 +35,10 @@ const PORT = process.env.PORT;
 app.get('/test', (req, res) => {
     res.send('Hello World, test api is working.');
 })
+
+//config form data
+app.use(acceptFormData())
+
 
 //http://localhost:5000/api/user/create
 
