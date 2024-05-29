@@ -39,6 +39,9 @@ app.get('/test', (req, res) => {
 //config form data
 app.use(acceptFormData())
 
+//make a static public folder
+app.use(express.static('./public'))
+
 
 //http://localhost:5000/api/user/create
 

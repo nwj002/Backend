@@ -10,11 +10,17 @@ const createProduct = async (req, res) => {
 
     //validation the data
     if (!productName || !productPrice || !productDescription || !productCategory) {
-        return res.status(400).json({ "success": false, "message": "Please fill all the fields" });
+        return res.status(400).json({
+            "success": false,
+            "message": "Please fill all the fields"
+        });
     }
     //validate if there is image
     if (!req.files || !req.files.productImage) {
-        return res.status(400).json({ "success": false, "message": "Please upload an image" });
+        return res.status(400).json({
+            "success": false,
+            "message": "Please upload an image"
+        });
     }
     const { productImage } = req.files;
     //upload image
@@ -50,4 +56,25 @@ const createProduct = async (req, res) => {
     }
 };
 
-module.exports = { createProduct }
+//Fetch all products
+const getAllProducts = async (req, res) => {
+    //try catch
+    try {
+        const allProducts = await productModel.find({})
+        res.status(201).json({
+            "success": true,
+            "message": "All products fetched successfully",
+            "data": allProducts
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            "success": false,
+            "message": "Internal server error",
+            "error": error
+        })
+    }
+    //Fetch all products
+    //Send response
+}
+module.exports = { createProduct, getAllProducts }
