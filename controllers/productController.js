@@ -1,5 +1,6 @@
 const path = require('path');
 const productModel = require('../models/productModel');
+const { get } = require('http');
 
 const createProduct = async (req, res) => {
     console.log(req.body);
@@ -77,4 +78,39 @@ const getAllProducts = async (req, res) => {
     //Fetch all products
     //Send response
 }
-module.exports = { createProduct, getAllProducts }
+
+//fetch single product
+const getSingleProduct = async (req, res) => {
+    //get product id from url (yellai bhancha params)
+    const productId = req.params.id;
+    //try catch
+    try {
+        const product = await productModel.findById(productId);
+        if (!product) {
+            return res.status(400).json({
+                "success": false,
+                "message": "Product not found"
+            })
+        }
+        res.status(201).json({
+            "success": true,
+            "message": "Product fetched successfully",
+            "data": product
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            "success": false,
+            "message": "Internal server error",
+            "error": error
+        })
+    }
+
+    //get id from url
+    //try catch
+    //fetch single product
+    //Send response
+
+}
+
+module.exports = { createProduct, getAllProducts, getSingleProduct }
