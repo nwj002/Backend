@@ -6,5 +6,9 @@ router.post('/create', productController.createProduct);
 router.get('/get_all_products', productController.getAllProducts);
 //single product fetch
 router.get('/get_single_product/:id', productController.getSingleProduct);
+
+//delete_product
+router.delete('/delete_product/:id', productController.deleteProduct);
+
 //exporting the router
 module.exports = router;
