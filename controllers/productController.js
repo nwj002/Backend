@@ -1,6 +1,6 @@
 const path = require('path');
 const productModel = require('../models/productModel');
-const { get } = require('http');
+const fs = require('fs'); // file system 
 
 const createProduct = async (req, res) => {
     console.log(req.body);
@@ -128,10 +128,69 @@ const deleteProduct = async (req, res) => {
     }
 }
 
+//update product
+//1. get product id from url (params)
+//2. if image: 
+//3. new image should be uploaded
+//4. old image should be deleted
+//5. find product (database) product image
+//6 find the image in directory 
+//7. delete the image
+//8. update the product
+const updateProduct = async (req, res) => {
+    try {
+        if (req.files && req.files.productImage) {
+            //destructuring 
+            const { productImage } = req.files;
+
+            //upload image to / public/products folders
+            //1. generate new image name( abc.png cha bhani  chnage hunu paryo 123-abc.png)
+            const imageName = `${Date.now()}-${productImage.name}`;
+            //2. make a upload path(/path/upload - directory huncha)
+            const imageUploadPath = path.join(__dirname, `../public/products/${imageName}`);
+
+            //move to folder 
+            await productImage.mv(imageUploadPath);
+
+            //req.params (id), req.body (updated data: pp, pn =, pc, pd ), req.files (image)
+            //add new field to req.body (product image -> name)
+            req.body.productImage = imageName; // image uploaded (generated name)
+
+            //if image is iploaded and req.body is assignmed 
+            if (req.body.productImage) {
+                //finding existing product
+                const existingProduct = await productModel.findById(req.params.id);
+                //searching the image in directory
+                const oldImagePath = path.join(__dirname, `../public/products/${existingProduct.productImage}`);
+                //delete old image from the file system 
+                fs.unlinkSync(oldImagePath);
+            }
+
+        }
+
+        //update the data
+        const updatedProduct = await productModel.findByIdAndUpdate(req.params.id, req.body,);
+        res.status(201).json({
+            "success": true,
+            "message": "Product updated successfully",
+            "data": updatedProduct
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            "success": false,
+            "message": "Internal server error",
+            "error": error
+        })
+    }
+};
+
 module.exports = {
     createProduct,
     getAllProducts,
     getSingleProduct,
     deleteProduct,
+    updateProduct,
 
 }
