@@ -8,7 +8,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const acceptFormData = require('express-fileupload');
 
-// creating an express application. 
+// creating an express application. `
 const app = express();
 app.use(express.json())
 
@@ -55,3 +55,5 @@ app.listen(PORT, () => {
     console.log(`Server-app is running on port ${PORT}`);
 });
 
+//exporting the app
+module.exports = app;

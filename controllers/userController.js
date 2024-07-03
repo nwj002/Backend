@@ -1,15 +1,16 @@
 const userModel = require('../models/userModel');
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const sendOtp = require('../service/sendOtp')
 
 const createUser = async (req, res) => {
     //Step one : Check incoming data
     console.log(req.body);
     //Step two : Destrucutre the incoming data (i.e., firstname,lastname,age)
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, phone } = req.body;
 
     //Step three : Validate the data (Check if empty, stop the process and send response)
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email || !password || !phone) {
 
         // res.send("Please fill up all the given fields!");
         //res.status(400).json()
@@ -46,6 +47,7 @@ const createUser = async (req, res) => {
             lastName: lastName,
             email: email,
             password: hashedPassword,
+            phone: phone
         })
 
         //Step 5.2.2 : Save to Database.
@@ -114,7 +116,7 @@ const loginUser = async (req, res) => {
         }
         //token ( generate - userdata + KEY)
         const token = await jwt.sign(
-            { id: user._id }, process.env.JWT_SECRET
+            { id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET
         )
 
         // sending the response ( token, user data,)
@@ -134,7 +136,128 @@ const loginUser = async (req, res) => {
     }
 
 }
+// Forgot Password
+const forgotPassword = async (req, res) => {
+    const { phone } = req.body;
 
+    if (!phone) {
+        return res.status(400).json({
+            'success': false,
+            'message': 'Provide your phone number!'
+        })
+    }
+
+    try {
+
+        // finding user
+        const user = await userModel.findOne({ phone: phone })
+        if (!user) {
+            return res.status(400).json({
+                'success': false,
+                'message': 'User Not Found!'
+            })
+        }
+
+        // generate random 6 digit otp
+        const otp = Math.floor(100000 + Math.random() * 900000)
+
+        // generate expiry date
+        const expiryDate = Date.now() + 360000;
+
+        // save to database for verification
+        user.resetPasswordOTP = otp;
+        user.resetPasswordExpires = expiryDate;
+        await user.save();
+
+        // send to registered phone number
+        const isSend = await sendOtp(phone, otp)
+        if (!isSend) {
+            return res.status(400).json({
+                'success': false,
+                'message': 'Error Sending OTP Code!'
+            })
+        }
+
+        // if success
+        res.status(200).json({
+            'success': true,
+            'message': 'OTP Send Successfully!'
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            'success': false,
+            'message': 'Server Error!'
+        })
+    }
+}
+
+//verify opt  and set new password
+const verifyOptandSetPassword = async (req, res) => {
+    //get date 
+    const { phone, otp, newPassword } = req.body;
+    if (!phone || !otp || !newPassword) {
+        return res.status(400).json({
+            'success': false,
+            'message': 'Please provide all t1he fields!'
+        })
+    }
+    try {
+        //find user
+        const user = await userModel.findOne({ phone: phone })
+        //check otp
+        if (user.resetPasswordOTP != otp) {
+            return res.status(400).json({
+                'success': false,
+                'message': 'Invalid OTP!'
+            })
+        }
+        if (user.resetPasswordExpires < Date.now()) {
+            return res.status(400).json({
+                'success': false,
+                'message': 'OTP Expired!'
+            })
+        }
+        // hashing/encryption of the password
+        const randomSalt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(newPassword, randomSalt)
+
+        //set new password
+        user.password = hashedPassword;
+        await user.save();
+
+        //response
+        res.status(200).json({
+            'success': true,
+            'message': 'Password Reset Successfully!'
+        })
+
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            'success': false,
+            'message': 'Server Error!'
+        })
+
+    }
+}
+
+
+
+
+// login route
+// change password
+
+// exporting
+module.exports = {
+    createUser,
+    loginUser,
+    forgotPassword,
+    verifyOptandSetPassword
+}
 //Step one : Check incoming data
 //Step two : Destrucutre the incoming data (i.e., firstname,lastname,age)
 //Step three : Validate the data.
@@ -144,13 +267,3 @@ const loginUser = async (req, res) => {
 //Step 4.2 (If credentials does not match ):
 //Step 4.2.2 : Find the user
 //Step
-
-
-// login route
-// change password
-
-// exporting
-module.exports = {
-    createUser,
-    loginUser
-}

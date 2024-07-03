@@ -56,7 +56,6 @@ const createProduct = async (req, res) => {
         });
     }
 };
-
 //Fetch all products
 const getAllProducts = async (req, res) => {
     //try catch
@@ -78,7 +77,6 @@ const getAllProducts = async (req, res) => {
     //Fetch all products
     //Send response
 }
-
 //fetch single product
 const getSingleProduct = async (req, res) => {
     //get product id from url (yellai bhancha params)
@@ -127,7 +125,6 @@ const deleteProduct = async (req, res) => {
 
     }
 }
-
 //update product
 //1. get product id from url (params)
 //2. if image: 
@@ -197,11 +194,47 @@ const updateProduct = async (req, res) => {
 
 }
 
+//paiganation
+
+const paginationProducts = async (req, res) => {
+    //page no
+    const pageNo = req.query.page || 1;
+    //result per page
+    const resultPerPage = 4;
+    try {
+        // find all products, skip, limit
+        const products = await productModel.find({}).skip((pageNo - 1) * resultPerPage).limit(resultPerPage);
+
+        // if page 6 is requestes, resutl 0
+        if (products.length == 0) {
+            return res.status(400).json({
+                "success": false,
+                "message": "No products found"
+            })
+        }
+        // send response'
+        res.status(201).json({
+            "success": true,
+            "message": "Products fetched successfully",
+            "data": products
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            "success": false,
+            "message": "Internal server error",
+            "error": error
+        })
+
+    }
+}
+
 module.exports = {
     createProduct,
     getAllProducts,
     getSingleProduct,
     deleteProduct,
     updateProduct,
-
+    paginationProducts,
 }

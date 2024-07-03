@@ -9,3 +9,9 @@ make a login page
 make a path in app.js
 make a frontend with email and password
 make a use state
+
+
+todays task // 12 june
+admin and user routes (restriction)
+(frontend) 
+backend modification
